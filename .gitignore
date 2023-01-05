@@ -6,3 +6,6 @@
 dependencies/
 x64/
 .vs/
+Debug/
+LIBS/
+Release/
