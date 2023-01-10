@@ -55,6 +55,7 @@ void Aiguilleur::listenPort()
 			}
 			else
 			{
+				/*
 				for (auto it = clients.begin(); it != clients.end();)
 				{
 					sf::TcpSocket* client = *it;
@@ -69,7 +70,7 @@ void Aiguilleur::listenPort()
 					{
 						++it;
 					}
-				}
+				}*/
 				// The listener socket is not ready, test all other sockets (the clients)
 
 				for (auto client : clients)

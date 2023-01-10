@@ -7,7 +7,12 @@ void TcpObject::sendMessage(std::string mess)
 
 	int len = std::strlen(data);
 
-	m_socket.send(data, len + 1);
+	sf::Socket::Status status = m_socket.send(data, len + 1);
+
+	if (status != sf::Socket::Done)
+	{
+		std::cout << "Erreur dans le send !" << std::endl;
+	}
 }
 
 std::string TcpObject::receiveMessage(sf::TcpSocket* socket)
@@ -17,11 +22,14 @@ std::string TcpObject::receiveMessage(sf::TcpSocket* socket)
 	std::size_t received;
 
 	// TCP socket:
-	if (socket->receive(data, 100, received) != sf::Socket::Done)
+
+	sf::Socket::Status status = socket->receive(data, 100, received);
+
+	if (status != sf::Socket::Done)
 	{
-		// error...
+		std::cout << "Erreur dans le receive !" << std::endl;
 	}
-	else if (socket->receive(data, 100, received) == sf::Socket::Disconnected)
+	else if (status == sf::Socket::Disconnected)
 	{
 		return std::string("Le client est déconnecte !!!");
 	}
