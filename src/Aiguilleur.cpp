@@ -26,8 +26,11 @@ void Aiguilleur::listenPort()
 
 	while (true)
 	{
+
+		//std::cout << "Nb de clients : " << clients.size() << std::endl;
+
 		// Make the selector wait for data on any socket
-		if (socketSelector.wait())
+		if (socketSelector.wait(sf::microseconds(100)))
 		{
 			// Test the listener
 			if (socketSelector.isReady(listener))
@@ -55,22 +58,6 @@ void Aiguilleur::listenPort()
 			}
 			else
 			{
-				/*
-				for (auto it = clients.begin(); it != clients.end();)
-				{
-					sf::TcpSocket* client = *it;
-					if (client->getRemoteAddress() == sf::IpAddress::None)
-					{
-						// Supprimez le client du tableau et libérez la mémoire
-						std::cout << "Le client : " << client << " s'est déconnecté !" << std::endl;
-						it = clients.erase(it);
-						delete client;
-					}
-					else
-					{
-						++it;
-					}
-				}*/
 				// The listener socket is not ready, test all other sockets (the clients)
 
 				for (auto client : clients)
@@ -82,13 +69,33 @@ void Aiguilleur::listenPort()
 						
 						std::string resp = this->receiveMessage(client);
 
-						std::cout << client->getRemoteAddress() << std::endl;
+						std::cout << client->getRemoteAddress() << " : " << resp << std::endl;
 
-						this->traiterReponse(resp);
+						//this->traiterReponse(resp);
+					}
+				}
+
+				for (auto it = clients.begin(); it != clients.end();)
+				{
+					sf::TcpSocket* client = *it;
+					if (client->getRemoteAddress() == sf::IpAddress::None)
+					{
+						// Supprimez le client du tableau et libérez la mémoire
+						std::cout << "Le client : " << client << " s'est déconnecté !" << std::endl;
+						socketSelector.remove(*client);
+						it = clients.erase(it);
+						delete client;
+					}
+					else
+					{
+						++it;
 					}
 				}
 			}
 		}
+
+
+
 
 	}
 }
