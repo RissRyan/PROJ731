@@ -28,7 +28,11 @@ public:
 		}
 
 		this->sendMessage("ABCDEFGHIJ");
+	}
 
+	~Client()
+	{
+		m_socket.disconnect();
 	}
 };
 

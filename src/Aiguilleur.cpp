@@ -1,5 +1,15 @@
 #include "Aiguilleur.h"
 
+void Aiguilleur::addServer(Server* server)
+{
+	m_servers.push_back(server);
+}
+
+void Aiguilleur::traiterReponse(std::string response)
+{
+	std::cout << response.substr(0, 3) << std::endl;
+}
+
 void Aiguilleur::listenPort()
 {
 	sf::SocketSelector socketSelector;
@@ -45,14 +55,35 @@ void Aiguilleur::listenPort()
 			}
 			else
 			{
-
+				for (auto it = clients.begin(); it != clients.end();)
+				{
+					sf::TcpSocket* client = *it;
+					if (client->getRemoteAddress() == sf::IpAddress::None)
+					{
+						// Supprimez le client du tableau et libérez la mémoire
+						std::cout << "Le client : " << client << " s'est déconnecté !" << std::endl;
+						it = clients.erase(it);
+						delete client;
+					}
+					else
+					{
+						++it;
+					}
+				}
 				// The listener socket is not ready, test all other sockets (the clients)
 
 				for (auto client : clients)
 				{
+					std::cout << client << std::endl;
+					
 					if (socketSelector.isReady(*client))
 					{
-						this->receiveMessage(client);
+						
+						std::string resp = this->receiveMessage(client);
+
+						std::cout << client->getRemoteAddress() << std::endl;
+
+						this->traiterReponse(resp);
 					}
 				}
 			}

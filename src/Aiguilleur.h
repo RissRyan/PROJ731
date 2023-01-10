@@ -5,12 +5,13 @@
 #include <vector>
 #include <SFML/Network.hpp>
 
-#include "TcpObject.h"
+#include "Server.h"
 
 class Aiguilleur : public TcpObject 
 {
 private:
 	std::string m_name = "Aiguilleur ";
+	std::vector<Server*> m_servers;
 public:
 	Aiguilleur(std::string name)
 	{
@@ -19,7 +20,12 @@ public:
 		std::cout << "Vous etes : " << m_name << std::endl;
 	}
 
+	void addServer(Server* server);
+
 	void listenPort();
+
+	void traiterReponse(std::string response);
+
 
 };
 

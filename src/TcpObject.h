@@ -16,6 +16,6 @@ public:
 
 	void sendMessage(std::string mess);
 
-	void receiveMessage(sf::TcpSocket* socket);
+	std::string receiveMessage(sf::TcpSocket* socket);
 };
 
