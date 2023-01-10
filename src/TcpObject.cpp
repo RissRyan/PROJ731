@@ -25,13 +25,14 @@ std::string TcpObject::receiveMessage(sf::TcpSocket* socket)
 
 	sf::Socket::Status status = socket->receive(data, 100, received);
 
-	if (status != sf::Socket::Done)
+	if (status == sf::Socket::Error)
 	{
-		std::cout << "Erreur dans le receive !" << std::endl;
+		std::cout << "[RECIEVE] Error : client disconnected" <<  std::endl;
+		socket->disconnect();
 	}
 	else if (status == sf::Socket::Disconnected)
 	{
-		return std::string("Le client est déconnecte !!!");
+		return std::string("L!!");
 	}
 	else
 	{
