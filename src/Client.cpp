@@ -16,7 +16,16 @@ Client::Client(std::string name)
 	}
 	else
 	{
-		std::cout << this->receiveMessage(&m_socket) << std::endl;
+		Packet resp = this->receiveMessage(&m_socket);
+		if (resp.status == sf::Socket::Status::Done)
+		{
+			std::cout << resp.message << std::endl;
+		}
+		else
+		{
+			std::cout << "Pb de reception !" << std::endl;
+		}
+
 	}
 
 	this->sendMessage(&m_socket, "ABCDEFGHIJ");

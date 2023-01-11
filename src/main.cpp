@@ -24,6 +24,10 @@ int main()
 
 		server.addData(myData);
 
+		Data* getData = server.getData("Test.txt");
+
+		std::cout << getData->data << std::endl;
+
 		// Aiguilleur
 
 		Aiguilleur ok("Wesh");

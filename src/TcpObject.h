@@ -5,6 +5,17 @@
 #include <vector>
 #include <SFML/Network.hpp>
 
+struct Packet {
+	sf::Socket::Status status;
+	std::string message = "";
+
+	Packet(sf::Socket::Status stat, std::string mess)
+	{
+		this->status = stat;
+		this->message = mess;
+	}
+};
+
 
 class TcpObject
 {
@@ -16,6 +27,6 @@ public:
 
 	void sendMessage(sf::TcpSocket* socket, std::string mess);
 
-	std::string receiveMessage(sf::TcpSocket* socket);
+	Packet receiveMessage(sf::TcpSocket* socket);
 };
 

@@ -67,13 +67,17 @@ void Aiguilleur::listenPort()
 					if (m_socketSelector.isReady(*client))
 					{
 						
-						std::string resp = this->receiveMessage(client);
+						Packet resp = this->receiveMessage(client);
 
-						std::cout << client->getRemoteAddress() << " : " << resp << std::endl;
-
-						if (resp == "[RECEIVE] Disconnected\n")
+						if (resp.status == sf::Socket::Status::Done)
 						{
-							std::cout << "Ok on fait ca" << std::endl;
+							std::cout << client->getRemoteAddress() << " : " << resp.message << std::endl;
+
+							this->traiterReponse(resp.message);
+						}
+						else
+						{
+							std::cout << "Le client : " << client << " s'est déconnecté !" << std::endl;
 
 							m_socketSelector.remove(*client);
 							client->disconnect();
@@ -81,7 +85,8 @@ void Aiguilleur::listenPort()
 							i--;
 						}
 
-						//this->traiterReponse(resp);
+
+
 					}
 				}
 

@@ -15,7 +15,7 @@ void TcpObject::sendMessage(sf::TcpSocket* socket, std::string mess)
 	}
 }
 
-std::string TcpObject::receiveMessage(sf::TcpSocket* socket)
+Packet TcpObject::receiveMessage(sf::TcpSocket* socket)
 {
 
 	char data[100];
@@ -27,18 +27,19 @@ std::string TcpObject::receiveMessage(sf::TcpSocket* socket)
 
 	if (status == sf::Socket::Error)
 	{
-		socket->disconnect();
-		return "[RECEIVE] Error\n";
+		Packet packet(status, std::string("[RECEIVE] Error\n"));
+		return packet;
 
 	}
 	else if (status == sf::Socket::Disconnected)
 	{
-		//socket->disconnect();
-		return std::string("[RECEIVE] Disconnected\n");
+		Packet packet(status, std::string("[RECEIVE] Disconnected\n"));
+		return packet;
 	}
 	else
 	{
+		Packet packet(status, std::string(data));
 		std::cout << "Received " << received << " bytes : ";
-		return std::string(data);
+		return packet;
 	}
 }
