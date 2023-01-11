@@ -26,19 +26,12 @@ public:
 		}
 		else
 		{
-			std::cout << "Vous etes connecté !\n";
+			std::cout << this->receiveMessage(&m_socket) << std::endl;
 		}
 
-		this->sendMessage("ABCDEFGHIJ");
-		this->sendMessage("ABCDEFGHIJ");
-		this->sendMessage("ABCDEFGHIJ");
-		this->sendMessage("ABCDEFGHIJ");
-
-		this->sendMessage("ABCDEFGHIJ");
-		this->sendMessage("ABCDEFGHIJ");
-		this->sendMessage("ABCDEFGHIJ");
-		this->sendMessage("ABCDEFGHIJ");
+		this->sendMessage(&m_socket, "ABCDEFGHIJ");
 	}
+
 	/*
 	~Client()
 	{

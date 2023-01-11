@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <list>
 #include <vector>
 #include <SFML/Network.hpp>
 
@@ -12,6 +13,9 @@ class Aiguilleur : public TcpObject
 private:
 	std::string m_name = "Aiguilleur ";
 	std::vector<Server*> m_servers;
+	sf::SocketSelector m_socketSelector;
+	sf::TcpListener m_listener;
+	std::vector<sf::TcpSocket*> m_clients;
 public:
 	Aiguilleur(std::string name)
 	{
