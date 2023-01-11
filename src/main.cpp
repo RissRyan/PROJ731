@@ -12,7 +12,7 @@ int main()
 	std::string c;
 	std::cout << "s/c \n";
 
-	std::cin >> c;
+	std::getline(std::cin, c);
 
 	if (c == "s")
 	{
@@ -23,10 +23,6 @@ int main()
 		Data* myData = new Data("Test.txt");
 
 		server.addData(myData);
-
-		Data* getData = server.getData("Test.txt");
-
-		std::cout << getData->data << std::endl;
 
 		// Aiguilleur
 
@@ -41,10 +37,6 @@ int main()
 	else
 	{
 		Client ok("AAAAA");
-
-		char x;
-
-		std::cin >> x;
 	}
 
 

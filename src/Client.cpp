@@ -1,6 +1,18 @@
 #include "Client.h"
 
+void Client::receiveFromServer()
+{
+	Packet resp = this->receiveMessage(&m_socket);
 
+	if (resp.status == sf::Socket::Status::Done)
+	{
+		std::cout << resp.message << std::endl;
+	}
+	else
+	{
+		std::cout << "Pb de reception !" << std::endl;
+	}
+}
 
 Client::Client(std::string name)
 {
@@ -16,17 +28,21 @@ Client::Client(std::string name)
 	}
 	else
 	{
-		Packet resp = this->receiveMessage(&m_socket);
-		if (resp.status == sf::Socket::Status::Done)
-		{
-			std::cout << resp.message << std::endl;
-		}
-		else
-		{
-			std::cout << "Pb de reception !" << std::endl;
-		}
+		std::string response;
+
+		do {
+
+			this->receiveFromServer();
+
+			std::getline(std::cin, response);
+
+			this->sendMessage(&m_socket, response);
+
+		} while (response != "stop");
 
 	}
 
-	this->sendMessage(&m_socket, "ABCDEFGHIJ");
+
+
+
 }

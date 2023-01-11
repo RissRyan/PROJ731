@@ -12,7 +12,9 @@ class Aiguilleur : public TcpObject
 {
 private:
 	std::string m_name = "Aiguilleur ";
+
 	std::vector<Server*> m_servers;
+
 	sf::SocketSelector m_socketSelector;
 	sf::TcpListener m_listener;
 	std::vector<sf::TcpSocket*> m_clients;
@@ -28,7 +30,7 @@ public:
 
 	void listenPort();
 
-	void traiterReponse(std::string response);
+	void traitReponse(sf::TcpSocket* socket, std::string response);
 
 
 };

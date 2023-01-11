@@ -13,4 +13,6 @@ private:
 	std::string m_name = "Client ";
 public:
 	Client(std::string name);
+
+	void receiveFromServer();
 };

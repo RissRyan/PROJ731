@@ -5,9 +5,44 @@ void Aiguilleur::addServer(Server* server)
 	m_servers.push_back(server);
 }
 
-void Aiguilleur::traiterReponse(std::string response)
+void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 {
-	std::cout << response.substr(0, 3) << std::endl;
+	std::string command = response.substr(0, 3);
+
+	std::cout << command << std::endl;
+
+	const int responseLength = response.length();
+	 
+	if (responseLength < 5)
+	{
+		this->sendMessage(socket, "Requete invalide !");
+	}
+	else if (command == "get")
+	{
+		std::cout << "Get from : " << socket << std::endl;
+
+		std::string flag = response.substr(4, responseLength - 4);
+
+		std::cout << "He wants to get : " << flag << std::endl;
+
+		Data* gotData = m_servers[0]->getData(flag);
+		
+		if (gotData != nullptr)
+		{
+			this->sendMessage(socket, gotData->data);
+		}
+		else
+		{
+			this->sendMessage(socket, "Ce fichier n'existe pas !");
+		}
+
+	}
+	else
+	{
+		std::string ok = "Commande : " + command + " inconnue !";
+		std::cout << ok << std::endl;
+		this->sendMessage(socket, ok);
+	}
 }
 
 void Aiguilleur::listenPort()
@@ -73,7 +108,7 @@ void Aiguilleur::listenPort()
 						{
 							std::cout << client->getRemoteAddress() << " : " << resp.message << std::endl;
 
-							this->traiterReponse(resp.message);
+							this->traitReponse(client, resp.message);
 						}
 						else
 						{
