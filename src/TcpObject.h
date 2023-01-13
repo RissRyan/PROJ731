@@ -22,6 +22,7 @@ class TcpObject
 protected:
 
 	sf::TcpSocket m_socket;
+	sf::Mutex mutex_socket;
 
 public:
 

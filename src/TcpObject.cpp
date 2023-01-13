@@ -3,11 +3,15 @@
 
 void TcpObject::sendMessage(sf::TcpSocket* socket, std::string mess)
 {
-	const char* data = mess.c_str();
+	sf::Packet packet;
 
-	int len = std::strlen(data);
+	packet << mess;
 
-	sf::Socket::Status status = socket->send(data, len + 1);
+	//mutex_socket.lock();
+
+	sf::Socket::Status status = socket->send(packet);
+
+	//mutex_socket.unlock();
 
 	if (status != sf::Socket::Done)
 	{
@@ -17,13 +21,19 @@ void TcpObject::sendMessage(sf::TcpSocket* socket, std::string mess)
 
 Packet TcpObject::receiveMessage(sf::TcpSocket* socket)
 {
+	sf::Packet sfmlPacket;
 
-	char data[100];
-	std::size_t received;
+	std::string mess;
 
 	// TCP socket:
 
-	sf::Socket::Status status = socket->receive(data, 100, received);
+	mutex_socket.lock();
+
+	sf::Socket::Status status = socket->receive(sfmlPacket);
+
+	mutex_socket.unlock();
+
+	sfmlPacket >> mess;
 
 	if (status == sf::Socket::Error)
 	{
@@ -38,8 +48,7 @@ Packet TcpObject::receiveMessage(sf::TcpSocket* socket)
 	}
 	else
 	{
-		Packet packet(status, std::string(data));
-		std::cout << "Received " << received << " bytes : ";
+		Packet packet(status, std::string(mess));
 		return packet;
 	}
 }

@@ -79,7 +79,10 @@ void Aiguilleur::listenPort()
 
 					std::cout << "Un nouveau client a ete ajoute : " << client << std::endl;
 
-					this->sendMessage(client, "Vous êtes connecte !");
+					this->sendMessage(client, "Vous etes connecte !");
+					this->sendMessage(client, "--- COMMANDES : ---");
+					this->sendMessage(client, "get <fichier> : pour recevoir un fichier");
+					this->sendMessage(client, "stop : pour se connecter");
 
 
 				}

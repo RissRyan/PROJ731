@@ -2,15 +2,18 @@
 
 void Client::receiveFromServer()
 {
-	Packet resp = this->receiveMessage(&m_socket);
+	while (true)
+	{
+		Packet resp = this->receiveMessage(&m_socket);
 
-	if (resp.status == sf::Socket::Status::Done)
-	{
-		std::cout << resp.message << std::endl;
-	}
-	else
-	{
-		std::cout << "Pb de reception !" << std::endl;
+		if (resp.status == sf::Socket::Status::Done)
+		{
+			std::cout << resp.message << std::endl;
+		}
+		else
+		{
+			std::cout << "Pb de reception !" << std::endl;
+		}
 	}
 }
 
@@ -30,9 +33,11 @@ Client::Client(std::string name)
 	{
 		std::string response;
 
-		do {
+		sf::Thread thread(&Client::receiveFromServer, this);
 
-			this->receiveFromServer();
+		thread.launch();
+
+		do {
 
 			std::getline(std::cin, response);
 
@@ -40,9 +45,8 @@ Client::Client(std::string name)
 
 		} while (response != "stop");
 
+		thread.terminate();
+
 	}
-
-
-
 
 }
