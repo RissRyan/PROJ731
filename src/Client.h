@@ -1,10 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <SFML/Network.hpp>
-
 #include "TcpObject.h"
 
 class Client : public TcpObject

@@ -1,0 +1,157 @@
+#pragma once
+
+#include <fstream>
+#include <functional>
+
+#include "ServerObject.h"
+
+struct Data
+{
+	std::string name = "";
+	std::string data = "";
+
+	Data();
+
+	Data(std::string fileName)
+	{
+		this->loadData(fileName);
+	}
+
+	void loadData(std::string fileName)
+	{
+		std::string filePath = "./Data/" + fileName;
+
+		std::fstream file;
+
+		file.open(filePath);
+
+		if (file.is_open())
+		{
+			this->name = fileName;
+
+			std::string buffer((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());
+
+			this->data = buffer;
+		}
+		else
+		{
+			std::cout << "Une erreur s'est produite lors du chargement de la donnee !" << std::endl;
+		}
+	}
+};
+
+class Machine : public ServerObject
+{
+private:
+	std::string m_name = "Machine ";
+	std::vector<Data*> m_allData;
+	sf::Thread m_thread;
+
+public:
+	Machine(std::string name) : m_thread(std::bind(&Machine::listenPort, this, 20000))
+	{
+		m_name += name;
+
+		std::cout << "Vous etes : " << m_name << std::endl;
+
+		m_thread.launch();
+	}
+
+	void listenPort(const int port)
+	{
+		// bind the listener to a port
+		if (m_listener.listen(port) != sf::Socket::Done)
+		{
+			std::cout << "Bababoey\n";
+		}
+		else
+		{
+			std::cout << m_name << " est en train d'écouter sur le port " << port << std::endl;
+
+			m_socketSelector.add(m_listener);
+
+			while (true)
+			{
+				// Make the selector wait for data on any socket
+				if (m_socketSelector.wait())
+				{
+					// Test the listener
+					if (m_socketSelector.isReady(m_listener))
+					{
+						// The listener is ready: there is a pending connection
+						sf::TcpSocket* client = new sf::TcpSocket;
+
+						if (m_listener.accept(*client) == sf::Socket::Done)
+						{
+
+							m_socketSelector.add(*client);
+
+							m_clients.push_back(client);
+
+							std::cout << "Un nouveau aiguilleur a ete ajoute : " << client << std::endl;
+
+
+						}
+						else
+						{
+							// Error, we won't get a new connection, delete the socket
+							std::cout << "Erreur connexion" << std::endl;
+							delete client;
+						}
+					}
+					else
+					{
+						// The listener socket is not ready, test all other sockets (the clients)
+
+						for (int i = 0; i < m_clients.size(); i++)
+						{
+							sf::TcpSocket* client = m_clients[i];
+							//std::cout << client << std::endl;
+
+							if (m_socketSelector.isReady(*client))
+							{
+
+								Packet resp = this->receiveMessage(client);
+
+								if (resp.status == sf::Socket::Status::Done)
+								{
+									std::cout << client->getRemoteAddress() << " : " << resp.message << std::endl;
+								}
+								else
+								{
+									std::cout << "L'aiguilleur : " << client << " s'est déconnecté !" << std::endl;
+
+									m_socketSelector.remove(*client);
+									client->disconnect();
+									m_clients.erase(m_clients.begin() + i);
+									i--;
+								}
+
+							}
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	void addData(Data* data)
+	{
+		m_allData.push_back(data);
+	}
+
+	Data* getData(std::string fileName)
+	{
+		for (auto data : m_allData)
+		{
+			if (data->name == fileName)
+			{
+				return data;
+			}
+		}
+
+		return nullptr;
+	}
+};
+

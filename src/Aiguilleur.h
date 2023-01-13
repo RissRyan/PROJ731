@@ -1,23 +1,13 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <list>
-#include <vector>
-#include <SFML/Network.hpp>
+#include "ServerObject.h"
 
-#include "Server.h"
-
-class Aiguilleur : public TcpObject 
+class Aiguilleur : public ServerObject 
 {
 private:
 	std::string m_name = "Aiguilleur ";
 
-	std::vector<Server*> m_servers;
-
-	sf::SocketSelector m_socketSelector;
-	sf::TcpListener m_listener;
-	std::vector<sf::TcpSocket*> m_clients;
+	std::vector<sf::TcpSocket*> m_servers;
 public:
 	Aiguilleur(std::string name)
 	{
@@ -26,12 +16,12 @@ public:
 		std::cout << "Vous etes : " << m_name << std::endl;
 	}
 
-	void addServer(Server* server);
+	void addServer(std::string serverName, const int port);
 
 	void listenPort(const int port);
 
 	void traitReponse(sf::TcpSocket* socket, std::string response);
 
-
+	std::string getData(std::string fileName);
 };
 

@@ -17,7 +17,7 @@ int main()
 
 	if (c == "s")
 	{
-		Server server("serveur");
+		Server server("serveur"); // PORT 20000
 
 		// On crée un fichier à charger dans le server
 
@@ -27,11 +27,11 @@ int main()
 
 		// Aiguilleur
 
-		Aiguilleur ok("Wesh");
+		Aiguilleur aig("Aig");
 
-		ok.addServer(&server);
+		aig.addServer("localhost", 20000);
 
-		ok.listenPort(42000);
+		aig.listenPort(42000);
 
 		delete myData;
 	}

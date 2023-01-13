@@ -1,8 +1,19 @@
 #include "Aiguilleur.h"
 
-void Aiguilleur::addServer(Server* server)
+void Aiguilleur::addServer(std::string serverName, const int port)
 {
-	m_servers.push_back(server);
+	sf::TcpSocket* socket = new sf::TcpSocket;
+
+	if (socket->connect(serverName, port) == sf::Socket::Done)
+	{
+		std::cout << "Vous avez pu vous connecter à la machine : " << serverName << " - " << port << std::endl;
+		m_servers.push_back(socket);
+	}
+	else
+	{
+		std::cout << "Vous n'avez pas pu vous connecter à la machine : " << serverName << " - " << port << std::endl;
+		delete socket;
+	}
 }
 
 void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
@@ -25,7 +36,7 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 
 		std::cout << "He wants to get : " << flag << std::endl;
 
-		Data* gotData = m_servers[0]->getData(flag);
+		Data* gotData = nullptr;//m_servers[0]->getData(flag);
 		
 		if (gotData != nullptr)
 		{
@@ -42,6 +53,25 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 		std::string ok = "Commande : " + command + " inconnue !";
 		std::cout << ok << std::endl;
 		this->sendMessage(socket, ok);
+	}
+}
+
+std::string Aiguilleur::getData(std::string fileName)
+{
+	for (auto serv : m_servers)
+	{
+		this->sendMessage(serv, fileName);
+
+		Packet response = this->receiveMessage(serv);
+
+		if (response.status == sf::Socket::Done)
+		{
+			 
+		}
+		else
+		{
+			std::cout << "Pb connexion serveur : " << serv << std::endl;
+		}
 	}
 }
 
@@ -123,11 +153,8 @@ void Aiguilleur::listenPort(const int port)
 							i--;
 						}
 
-
-
 					}
 				}
-
 
 			}
 		}
