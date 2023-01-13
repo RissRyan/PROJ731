@@ -28,7 +28,7 @@ public:
 
 	void addServer(Server* server);
 
-	void listenPort();
+	void listenPort(const int port);
 
 	void traitReponse(sf::TcpSocket* socket, std::string response);
 

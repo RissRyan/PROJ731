@@ -25,6 +25,8 @@ protected:
 	sf::Mutex mutex_socket;
 
 public:
+	
+	sf::Socket::Status connectToRemote(const std::string& nameServer, const int port);
 
 	void sendMessage(sf::TcpSocket* socket, std::string mess);
 

@@ -1,15 +1,21 @@
 #include "TcpObject.h"
 
 
+sf::Socket::Status TcpObject::connectToRemote(const std::string& nameServer, const int port)
+{
+	return this->m_socket.connect(nameServer, port);
+}
+
+
 void TcpObject::sendMessage(sf::TcpSocket* socket, std::string mess)
 {
-	sf::Packet packet;
+	sf::Packet sfmlPacket;
 
-	packet << mess;
+	sfmlPacket << mess;
 
 	//mutex_socket.lock();
 
-	sf::Socket::Status status = socket->send(packet);
+	sf::Socket::Status status = socket->send(sfmlPacket);
 
 	//mutex_socket.unlock();
 

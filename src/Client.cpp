@@ -17,12 +17,12 @@ void Client::receiveFromServer()
 	}
 }
 
-Client::Client(std::string name)
+Client::Client(std::string name, std::string serverName, const int port)
 {
 	m_name += name;
 
 	std::cout << "Vous etes : " << m_name << std::endl;
-	sf::Socket::Status status = m_socket.connect("localhost", 53000);
+	sf::Socket::Status status = this->connectToRemote(serverName, port);
 
 
 	if (status != sf::Socket::Done)

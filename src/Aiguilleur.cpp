@@ -45,11 +45,11 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 	}
 }
 
-void Aiguilleur::listenPort()
+void Aiguilleur::listenPort(const int port)
 {
 
 	// bind the listener to a port
-	if (m_listener.listen(53000) != sf::Socket::Done)
+	if (m_listener.listen(port) != sf::Socket::Done)
 	{
 		std::cout << "Bababoey\n";
 	}
