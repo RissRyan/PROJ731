@@ -6,7 +6,7 @@
 
 #include "Client.h"
 #include "Aiguilleur.h"
-#include "Machine.h"
+#include "Server.h"
 
 int main()
 {
@@ -30,7 +30,7 @@ int main()
 	}
 	else if(c == "m")
 	{
-		Machine server("serveur"); // PORT 20000
+		Server server("serveur"); // PORT 20000
 
 		// On crée un fichier à charger dans le server
 

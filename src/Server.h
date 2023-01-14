@@ -40,7 +40,7 @@ struct Data
 	}
 };
 
-class Machine : public ServerObject
+class Server : public ServerObject
 {
 private:
 	std::string m_name = "Machine ";
@@ -50,7 +50,7 @@ private:
 	std::vector<sf::TcpSocket*> m_aiguilleurs;
 
 public:
-	Machine(std::string name) : m_thread(std::bind(&Machine::listenPort, this, 20000))
+	Server(std::string name) : m_thread(std::bind(&Server::listenPort, this, 20000))
 	{
 		m_name += name;
 

@@ -22,7 +22,7 @@ public:
 
 	void listenPort(const int port);
 
-	sf::TcpSocket* getMachine();
+	sf::TcpSocket* getServer();
 
 	void traitReponse(sf::TcpSocket* socket, std::string response);
 };

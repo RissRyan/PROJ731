@@ -17,9 +17,9 @@ void Aiguilleur::addServer(std::string serverName, const int port)
 }
 
 
-sf::TcpSocket* Aiguilleur::getMachine()
+sf::TcpSocket* Aiguilleur::getServer()
 {
-	sf::TcpSocket* machine = m_servers[iRepartiteur];
+	sf::TcpSocket* server = m_servers[iRepartiteur];
 
 	iRepartiteur++;
 
@@ -28,7 +28,7 @@ sf::TcpSocket* Aiguilleur::getMachine()
 		iRepartiteur = 0;
 	}
 
-	return machine;
+	return server;
 }
 
 void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
@@ -51,11 +51,11 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 
 		std::cout << "He wants to get : " << flag << std::endl;
 
-		sf::TcpSocket* machine = getMachine();
+		sf::TcpSocket* server = getServer();
 
-		this->sendMessage(machine, flag);
+		this->sendMessage(server, flag);
 
-		Packet responseMachine = this->receiveMessage(machine);
+		Packet responseMachine = this->receiveMessage(server);
 		
 		if (responseMachine.status == sf::Socket::Done)
 		{
@@ -63,7 +63,7 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 		}
 		else
 		{
-			std::cout << "Pb connexion serveur : " << machine << std::endl;
+			std::cout << "Pb connexion serveur : " << server << std::endl;
 		}
 
 	}
