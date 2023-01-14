@@ -6,25 +6,18 @@
 
 #include "Client.h"
 #include "Aiguilleur.h"
+#include "Machine.h"
 
 int main()
 {
-	
 	std::string c;
-	std::cout << "s/c \n";
+	std::cout << "s/m/c \n";
 
 	std::getline(std::cin, c);
 
+
 	if (c == "s")
 	{
-		Server server("serveur"); // PORT 20000
-
-		// On crée un fichier à charger dans le server
-
-		Data* myData = new Data("Test.txt");
-
-		server.addData(myData);
-
 		// Aiguilleur
 
 		Aiguilleur aig("Aig");
@@ -33,7 +26,19 @@ int main()
 
 		aig.listenPort(42000);
 
-		delete myData;
+
+	}
+	else if(c == "m")
+	{
+		Machine server("serveur"); // PORT 20000
+
+		// On crée un fichier à charger dans le server
+
+		Data* myData = new Data("Test.txt");
+
+		server.addData(myData);
+
+		//delete myData;
 	}
 	else
 	{

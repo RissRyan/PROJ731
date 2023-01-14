@@ -29,7 +29,7 @@ struct Data
 		{
 			this->name = fileName;
 
-			std::string buffer((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());
+			std::string buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
 			this->data = buffer;
 		}
@@ -47,6 +47,8 @@ private:
 	std::vector<Data*> m_allData;
 	sf::Thread m_thread;
 
+	std::vector<sf::TcpSocket*> m_aiguilleurs;
+
 public:
 	Machine(std::string name) : m_thread(std::bind(&Machine::listenPort, this, 20000))
 	{
@@ -55,6 +57,34 @@ public:
 		std::cout << "Vous etes : " << m_name << std::endl;
 
 		m_thread.launch();
+	}
+
+	Data* getData(std::string fileName)
+	{
+		for (auto data : m_allData)
+		{
+			if (data->name == fileName)
+			{
+				return data;
+			}
+		}
+
+		return nullptr;
+	}
+
+
+	std::string traitQuery(const Packet& packet)
+	{
+		Data* data = this->getData(packet.message);
+
+		if (data != nullptr)
+		{
+			return data->data;
+		}
+		else
+		{
+			return "Ce fichier n'existe pas !";
+		}
 	}
 
 	void listenPort(const int port)
@@ -79,16 +109,16 @@ public:
 					if (m_socketSelector.isReady(m_listener))
 					{
 						// The listener is ready: there is a pending connection
-						sf::TcpSocket* client = new sf::TcpSocket;
+						sf::TcpSocket* aiguilleur = new sf::TcpSocket;
 
-						if (m_listener.accept(*client) == sf::Socket::Done)
+						if (m_listener.accept(*aiguilleur) == sf::Socket::Done)
 						{
 
-							m_socketSelector.add(*client);
+							m_socketSelector.add(*aiguilleur);
 
-							m_clients.push_back(client);
+							m_aiguilleurs.push_back(aiguilleur);
 
-							std::cout << "Un nouveau aiguilleur a ete ajoute : " << client << std::endl;
+							std::cout << "Un nouveau aiguilleur a ete ajoute : " << aiguilleur << std::endl;
 
 
 						}
@@ -96,34 +126,36 @@ public:
 						{
 							// Error, we won't get a new connection, delete the socket
 							std::cout << "Erreur connexion" << std::endl;
-							delete client;
+							delete aiguilleur;
 						}
 					}
 					else
 					{
 						// The listener socket is not ready, test all other sockets (the clients)
 
-						for (int i = 0; i < m_clients.size(); i++)
+						for (int i = 0; i < m_aiguilleurs.size(); i++)
 						{
-							sf::TcpSocket* client = m_clients[i];
+							sf::TcpSocket* aiguilleur = m_aiguilleurs[i];
 							//std::cout << client << std::endl;
 
-							if (m_socketSelector.isReady(*client))
+							if (m_socketSelector.isReady(*aiguilleur))
 							{
 
-								Packet resp = this->receiveMessage(client);
+								Packet resp = this->receiveMessage(aiguilleur);
 
 								if (resp.status == sf::Socket::Status::Done)
 								{
-									std::cout << client->getRemoteAddress() << " : " << resp.message << std::endl;
+									std::cout << aiguilleur->getRemoteAddress() << " : " << resp.message << std::endl;
+
+									this->sendMessage(aiguilleur, traitQuery(resp));
 								}
 								else
 								{
-									std::cout << "L'aiguilleur : " << client << " s'est déconnecté !" << std::endl;
+									std::cout << "L'aiguilleur : " << aiguilleur << " s'est déconnecté !" << std::endl;
 
-									m_socketSelector.remove(*client);
-									client->disconnect();
-									m_clients.erase(m_clients.begin() + i);
+									m_socketSelector.remove(*aiguilleur);
+									aiguilleur->disconnect();
+									m_aiguilleurs.erase(m_aiguilleurs.begin() + i);
 									i--;
 								}
 
@@ -139,19 +171,6 @@ public:
 	void addData(Data* data)
 	{
 		m_allData.push_back(data);
-	}
-
-	Data* getData(std::string fileName)
-	{
-		for (auto data : m_allData)
-		{
-			if (data->name == fileName)
-			{
-				return data;
-			}
-		}
-
-		return nullptr;
 	}
 };
 

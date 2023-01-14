@@ -7,7 +7,9 @@ class Aiguilleur : public ServerObject
 private:
 	std::string m_name = "Aiguilleur ";
 
+	std::vector<sf::TcpSocket*> m_clients;
 	std::vector<sf::TcpSocket*> m_servers;
+	int iRepartiteur = 0;
 public:
 	Aiguilleur(std::string name)
 	{
@@ -20,8 +22,8 @@ public:
 
 	void listenPort(const int port);
 
-	void traitReponse(sf::TcpSocket* socket, std::string response);
+	sf::TcpSocket* getMachine();
 
-	std::string getData(std::string fileName);
+	void traitReponse(sf::TcpSocket* socket, std::string response);
 };
 

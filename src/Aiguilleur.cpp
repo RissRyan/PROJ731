@@ -16,6 +16,21 @@ void Aiguilleur::addServer(std::string serverName, const int port)
 	}
 }
 
+
+sf::TcpSocket* Aiguilleur::getMachine()
+{
+	sf::TcpSocket* machine = m_servers[iRepartiteur];
+
+	iRepartiteur++;
+
+	if (iRepartiteur > m_servers.size() - 1)
+	{
+		iRepartiteur = 0;
+	}
+
+	return machine;
+}
+
 void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 {
 	std::string command = response.substr(0, 3);
@@ -36,15 +51,19 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 
 		std::cout << "He wants to get : " << flag << std::endl;
 
-		Data* gotData = nullptr;//m_servers[0]->getData(flag);
+		sf::TcpSocket* machine = getMachine();
+
+		this->sendMessage(machine, flag);
+
+		Packet responseMachine = this->receiveMessage(machine);
 		
-		if (gotData != nullptr)
+		if (responseMachine.status == sf::Socket::Done)
 		{
-			this->sendMessage(socket, gotData->data);
+			this->sendMessage(socket, responseMachine.message);
 		}
 		else
 		{
-			this->sendMessage(socket, "Ce fichier n'existe pas !");
+			std::cout << "Pb connexion serveur : " << machine << std::endl;
 		}
 
 	}
@@ -53,25 +72,6 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 		std::string ok = "Commande : " + command + " inconnue !";
 		std::cout << ok << std::endl;
 		this->sendMessage(socket, ok);
-	}
-}
-
-std::string Aiguilleur::getData(std::string fileName)
-{
-	for (auto serv : m_servers)
-	{
-		this->sendMessage(serv, fileName);
-
-		Packet response = this->receiveMessage(serv);
-
-		if (response.status == sf::Socket::Done)
-		{
-			 
-		}
-		else
-		{
-			std::cout << "Pb connexion serveur : " << serv << std::endl;
-		}
 	}
 }
 
