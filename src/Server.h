@@ -96,7 +96,7 @@ public:
 		}
 		else
 		{
-			std::cout << m_name << " est en train d'écouter sur le port " << port << std::endl;
+			std::cout << m_name << " est en train d'ecouter sur le port " << port << std::endl;
 
 			m_socketSelector.add(m_listener);
 
