@@ -14,7 +14,7 @@ L'ordre est à respecter pour ne pas avoir de problèmes (les différentes conne
 
 Il faut ansi lancer 3 fois le programme pour que ça marche.
 
-Le client peut recevoir un fichier en tapant la commande get <fichier>.
+Le client peut recevoir un fichier en tapant la commande get nom_du_fichier.
 
 Il y a un fichier nommé Test.txt dans le dossier /Data.
 
