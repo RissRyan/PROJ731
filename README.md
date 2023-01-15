@@ -2,15 +2,23 @@
 
 Par RISS Ryan et NGOR Calvin
 
-## Lors du lancement de programme on peut soit choisir de lancer :
+## Lors du lancement du programme on peut soit choisir de lancer :
 
 - Un serveur (s)
 - Un aiguilleur (a)
 - Un client (c)
 
+Ou bien un test de connexion aiguilleur-aiguilleur
+
 L'ordre est à respecter pour ne pas avoir de problèmes (les différentes connexions par les différents port sont codées, tout est en localhost).
 
-Ou bien un test de connexion aiguilleur-aiguilleur
+Il faut ansi lancer 3 fois le programme pour que ça marche.
+
+Le client peut recevoir un fichier en tapant la commande get <fichier>.
+
+Il y a un fichier nommé Test.txt dans le dossier /Data.
+
+Ainsi vous pouvez tester que tout marche bien en tapant "get Test.txt".
 
 ## Le code 
 
