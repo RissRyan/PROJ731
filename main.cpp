@@ -11,7 +11,7 @@
 int main()
 {
 	std::string c;
-	std::cout << "a/s/u \n"; // Choisir entre Aiguilleur, serveur, utilisateur ou test aiguilleur/aiguilleur
+	std::cout << "s/a/c \n"; // Choisir entre Aiguilleur, serveur, utilisateur ou test aiguilleur/aiguilleur
 
 	std::getline(std::cin, c);
 
@@ -43,7 +43,7 @@ int main()
 		server.addData(myData);
 
 	}
-	else if(c == "u") // Utilisateur
+	else if(c == "c") // Client
 	{
 		Client ok("1", "localhost", 42000);
 	}
