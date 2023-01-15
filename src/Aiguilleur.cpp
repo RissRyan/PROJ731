@@ -1,17 +1,24 @@
 #include "Aiguilleur.h"
 
+Aiguilleur::Aiguilleur(std::string name)
+{
+	m_name += name;
+
+	std::cout << "Vous etes : " << m_name << std::endl;
+}
+
 void Aiguilleur::addServer(std::string serverName, const int port)
 {
 	sf::TcpSocket* socket = new sf::TcpSocket;
 
 	if (socket->connect(serverName, port) == sf::Socket::Done)
 	{
-		std::cout << "Vous avez pu vous connecter à la machine : " << serverName << " - " << port << std::endl;
+		std::cout << "Vous avez pu vous connecter au serveur : " << serverName << " - " << port << std::endl;
 		m_servers.push_back(socket);
 	}
 	else
 	{
-		std::cout << "Vous n'avez pas pu vous connecter à la machine : " << serverName << " - " << port << std::endl;
+		std::cout << "Vous n'avez pas pu vous connecter au serveur : " << serverName << " - " << port << std::endl;
 		delete socket;
 	}
 }
@@ -19,9 +26,13 @@ void Aiguilleur::addServer(std::string serverName, const int port)
 
 sf::TcpSocket* Aiguilleur::getServer()
 {
+	// On choisit le serveur en prennant celui qui est après celui qui vient d'être utilisé
+
 	sf::TcpSocket* server = m_servers[iRepartiteur];
 
 	iRepartiteur++;
+
+	// On évite l'out of range et on retourne au début du tableau
 
 	if (iRepartiteur > m_servers.size() - 1)
 	{
@@ -33,11 +44,14 @@ sf::TcpSocket* Aiguilleur::getServer()
 
 void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 {
+
+	// on prend les 3 premiers caractères pour connaître la commande 
+
 	std::string command = response.substr(0, 3);
 
-	std::cout << command << std::endl;
-
 	const int responseLength = response.length();
+
+	// si la réponse fait moins de 5 caractères alors elle est invalide
 	 
 	if (responseLength < 5)
 	{
@@ -45,15 +59,17 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 	}
 	else if (command == "get")
 	{
-		std::cout << "Get from : " << socket << std::endl;
+		std::cout << "Get de : " << socket << std::endl;
 
-		std::string flag = response.substr(4, responseLength - 4);
+		std::string file = response.substr(4, responseLength - 4);
 
-		std::cout << "He wants to get : " << flag << std::endl;
+		std::cout << "Il veut lire : " << file << std::endl;
+
+		// On envoie la requête au serveur choisi selon la répartition de charge
 
 		sf::TcpSocket* server = getServer();
 
-		this->sendMessage(server, flag);
+		this->sendMessage(server, file);
 
 		Packet responseMachine = this->receiveMessage(server);
 		
@@ -64,14 +80,15 @@ void Aiguilleur::traitReponse(sf::TcpSocket* socket, std::string response)
 		else
 		{
 			std::cout << "Pb connexion serveur : " << server << std::endl;
+			this->sendMessage(socket, "Pb connexion serveur");
 		}
 
 	}
 	else
 	{
-		std::string ok = "Commande : " + command + " inconnue !";
-		std::cout << ok << std::endl;
-		this->sendMessage(socket, ok);
+		std::string error = "Commande : " + command + " inconnue !";
+		std::cout << error << std::endl;
+		this->sendMessage(socket, error);
 	}
 }
 
@@ -81,83 +98,85 @@ void Aiguilleur::listenPort(const int port)
 	// bind the listener to a port
 	if (m_listener.listen(port) != sf::Socket::Done)
 	{
-		std::cout << "Bababoey\n";
+		std::cout << "Impossible d'ecouter le port " << port << std::endl;
 	}
-
-	m_socketSelector.add(m_listener);
-
-	while (true)
+	else
 	{
 
-		//std::cout << "Nb de clients : " << clients.size() << std::endl;
+		std::cout << m_name << " est en train d'ecouter sur le port " << port << std::endl;
 
-		// Make the selector wait for data on any socket
-		if (m_socketSelector.wait(sf::microseconds(100)))
+		m_socketSelector.add(m_listener);
+
+		while (true)
 		{
-			// Test the listener
-			if (m_socketSelector.isReady(m_listener))
+
+			// Make the selector wait for data on any socket
+			if (m_socketSelector.wait(sf::microseconds(100)))
 			{
-				// The listener is ready: there is a pending connection
-				sf::TcpSocket* client = new sf::TcpSocket;
-
-				if (m_listener.accept(*client) == sf::Socket::Done)
+				// Test the listener
+				if (m_socketSelector.isReady(m_listener))
 				{
+					// The listener is ready: there is a pending connection
+					sf::TcpSocket* client = new sf::TcpSocket;
 
-					m_socketSelector.add(*client);
+					if (m_listener.accept(*client) == sf::Socket::Done)
+					{
 
-					m_clients.push_back(client);
+						m_socketSelector.add(*client);
 
-					std::cout << "Un nouveau client a ete ajoute : " << client << std::endl;
+						m_clients.push_back(client);
 
-					this->sendMessage(client, "Vous etes connecte !");
-					this->sendMessage(client, "--- COMMANDES : ---");
-					this->sendMessage(client, "get <fichier> : pour recevoir un fichier");
-					this->sendMessage(client, "stop : pour se connecter");
+						std::cout << "Un nouveau client a ete ajoute : " << client << std::endl;
+
+						this->sendMessage(client, "Vous etes connecte !");
+						this->sendMessage(client, "--- COMMANDES : ---");
+						this->sendMessage(client, "get <fichier> : pour recevoir un fichier");
+						this->sendMessage(client, "stop : pour se connecter");
 
 
+					}
+					else
+					{
+						// Error, we won't get a new connection, delete the socket
+						std::cout << "Erreur nouvelle connexion client" << std::endl;
+						delete client;
+					}
 				}
 				else
 				{
-					// Error, we won't get a new connection, delete the socket
-					std::cout << "Erreur connexion" << std::endl;
-					delete client;
-				}
-			}
-			else
-			{
-				// The listener socket is not ready, test all other sockets (the clients)
+					// The listener socket is not ready, test all other sockets (the clients)
 
-				for (int i = 0; i < m_clients.size(); i++)
-				{
-					sf::TcpSocket* client = m_clients[i];
-					std::cout << client << std::endl;
-					
-					if (m_socketSelector.isReady(*client))
+					for (int i = 0; i < m_clients.size(); i++)
 					{
-						
-						Packet resp = this->receiveMessage(client);
+						sf::TcpSocket* client = m_clients[i];
 
-						if (resp.status == sf::Socket::Status::Done)
+						if (m_socketSelector.isReady(*client))
 						{
-							std::cout << client->getRemoteAddress() << " : " << resp.message << std::endl;
 
-							this->traitReponse(client, resp.message);
+							Packet resp = this->receiveMessage(client);
+
+							if (resp.status == sf::Socket::Status::Done)
+							{
+								std::cout << client << " : " << resp.message << std::endl;
+
+								this->traitReponse(client, resp.message);
+							}
+							else // Si le client s'est deconnecté on le retire
+							{
+								std::cout << "Le client : " << client << " s'est deconnecte !" << std::endl;
+
+								m_socketSelector.remove(*client);
+								client->disconnect();
+								m_clients.erase(m_clients.begin() + i);
+								i--;
+							}
+
 						}
-						else
-						{
-							std::cout << "Le client : " << client << " s'est déconnecté !" << std::endl;
-
-							m_socketSelector.remove(*client);
-							client->disconnect();
-							m_clients.erase(m_clients.begin() + i);
-							i--;
-						}
-
 					}
+
 				}
-
 			}
-		}
 
+		}
 	}
 }

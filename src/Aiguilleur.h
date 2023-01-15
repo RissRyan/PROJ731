@@ -2,28 +2,27 @@
 
 #include "ServerObject.h"
 
+// Classe pour l'aiguilleur
+
 class Aiguilleur : public ServerObject 
 {
 private:
 	std::string m_name = "Aiguilleur ";
 
-	std::vector<sf::TcpSocket*> m_clients;
-	std::vector<sf::TcpSocket*> m_servers;
-	int iRepartiteur = 0;
+	std::vector<sf::TcpSocket*> m_clients; // Liste des clients
+	std::vector<sf::TcpSocket*> m_servers; // Les des clients
+
+	int iRepartiteur = 0; // int pour la répartion de charge
+
 public:
-	Aiguilleur(std::string name)
-	{
-		m_name += name;
+	Aiguilleur(std::string name);
 
-		std::cout << "Vous etes : " << m_name << std::endl;
-	}
+	void addServer(std::string serverName, const int port); // Ajoute un serveur à m_servers
 
-	void addServer(std::string serverName, const int port);
+	void listenPort(const int port); // écoute sur un port, pour les clients.
 
-	void listenPort(const int port);
+	sf::TcpSocket* getServer(); // Permet de savoir quel serveur utiliser (répartion de charge)
 
-	sf::TcpSocket* getServer();
-
-	void traitReponse(sf::TcpSocket* socket, std::string response);
+	void traitReponse(sf::TcpSocket* socket, std::string response); // Traiter la réponse d'un client
 };
 

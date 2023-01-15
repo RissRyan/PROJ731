@@ -9,7 +9,7 @@ sf::Socket::Status TcpObject::connectToRemote(const std::string& nameServer, con
 
 void TcpObject::sendMessage(sf::TcpSocket* socket, std::string mess)
 {
-	sf::Packet sfmlPacket;
+	sf::Packet sfmlPacket; // Paquet de la SFML pour éviter certains problèmes (fin de chaînes de caractères et comminucation entre différents OS)
 
 	sfmlPacket << mess;
 
@@ -21,17 +21,13 @@ void TcpObject::sendMessage(sf::TcpSocket* socket, std::string mess)
 
 	if (status != sf::Socket::Done)
 	{
-		std::cout << "Erreur dans le send !" << std::endl;
+		std::cout << "Erreur dans l'envoie a " << socket  << std::endl;
 	}
 }
 
 Packet TcpObject::receiveMessage(sf::TcpSocket* socket)
 {
-	sf::Packet sfmlPacket;
-
-	std::string mess;
-
-	// TCP socket:
+	sf::Packet sfmlPacket; // Paquet de la SFML pour éviter certains problèmes (fin de chaînes de caractères et comminucation entre différents OS)
 
 	mutex_socket.lock();
 
@@ -39,7 +35,12 @@ Packet TcpObject::receiveMessage(sf::TcpSocket* socket)
 
 	mutex_socket.unlock();
 
-	sfmlPacket >> mess;
+
+	std::string mess;
+
+	sfmlPacket >> mess; // On écrit le message reçu dans le string mess
+
+	// On gère les différentes erreurs
 
 	if (status == sf::Socket::Error)
 	{

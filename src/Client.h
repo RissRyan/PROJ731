@@ -2,6 +2,8 @@
 
 #include "TcpObject.h"
 
+// Classe pour l'utilisateur
+
 class Client : public TcpObject
 {
 private:
@@ -9,5 +11,5 @@ private:
 public:
 	Client(std::string name, std::string serverName, const int port);
 
-	void receiveFromServer();
+	void receiveFromServer(); // Threadé pour pouvoir recevoir et envoyer en même temps
 };
